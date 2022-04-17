@@ -9,24 +9,31 @@
 #include <WiFi.h>
 #include "AzureIotHub.h"
 #include "Esp32MQTTClient.h"
+
+#include "flow_sensor.h"
+
 #define INTERVAL 3000
 #define DEVICE_ID "Device0001"
 #define USER_ID "User0001"
 #define MESSAGE_MAX_LEN 256
 
+unsigned long oldTime;
+
+
 const char* ssid     = "Binary";
 const char* password = "123456778";
 /*String containing Hostname, Device Id & Device Key in the format:*/  
 static const char* connectionString =  "HostName=WaterMeterSystemIoTHub.azure-devices.net;DeviceId=waterMeterDevice1;SharedAccessKey=l8DAa/iZEdHnCmNC2ZzOIMJ6wxK1171GMmiU9ytUgsw=" ; 
-const char *messageData = "{\"deviceId\":\"%s\", \"userId\":\"%s\",\"messageId\":%d,  \"waterIndex\":%.2f, \"valveStatus\":%d, \"batteryPower\":%.2f}";
+const char *messageData = "{\"deviceId\":\"%s\", \"userId\":\"%s\",\"messageId\":%d,  \"waterIndex\":%.d, \"valveStatus\":%d, \"batteryPower\":%.2f}";
 int messageCount = 1;
 static bool hasWifi = false;
 static bool messageSending = true;
 static uint64_t send_interval_ms;
 
-float waterIndex = 99.66;
+unsigned long waterIndex ;
 float batteryPower =69.96;
 int valveStatus = 0; /*TODO: use boolean*/
+
 
 static void InitWifi()
 {
@@ -101,6 +108,9 @@ static int  DeviceMethodCallback(const char *methodName, const unsigned char *pa
 
 void setup() {
   Serial.begin(115200);
+  void initFlowSensor();
+  oldTime = 0;
+
   Serial.println("ESP32 Device");
   Serial.println("Initializing...");
   Serial.println(" > WiFi");
@@ -144,5 +154,15 @@ void loop() {
       Esp32MQTTClient_Check();
     }
   }
+
+  if ((millis() - oldTime) > 1000) // Only process counters once per second
+    {
+        // Serial.println();
+        // Serial.print("Output Liquid Quantity: ");
+        waterIndex = readFlowSensor(oldTime);
+        // Serial.print(waterIndex);
+        // Serial.println("mL");
+        oldTime = millis();
+    }
   delay(10);
 }
