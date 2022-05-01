@@ -1,16 +1,13 @@
 /**
   ******************************************************************************
-  * @file    ds18b20.h
+  * @file    flow_sensor.cpp
   * @author  Nguyen Phuoc Nguyen
-  * @date    08-11-2020
+  * @date    16-04-2022
   * @brief   This file contains definitions for 
 	
   ******************************************************************************
   */
 #include "flow_sensor.h"
-void printHello(){
-    Serial.println(" wtf mannnnnnnnnnnnnnnnnnnnnn");
-}
 
 // struct flowSensor
 // {
@@ -56,7 +53,7 @@ unsigned long readFlowSensor(  unsigned long oldTimeSensor ){
     flowMilliLitres = (flowRate / 60) * 1000;
     totalMilliLitres += flowMilliLitres;
     // unsigned int frac;
-    // //Print the flow rate for this second in litres / minute
+    //Print the flow rate for this second in litres / minute
     // Serial.print("Flow rate: ");
     // Serial.print(int(flowRate)); // Print the integer part of the variable
     // Serial.print("L/min");
